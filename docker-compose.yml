@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  app:
+    image: node:16 
+    container_name: vanilla-app
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app  
+    ports:
+      - "3000:3000"  
+    command: npm start 
+    depends_on:
+      - db  
+    env_file:
+      - .env  
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8 
+    container_name: vanilla-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}  
+      MYSQL_DATABASE: ${DB_NAME}  
+    ports:
+      - "3306:3306"  
+    volumes:
+      - db-data:/var/lib/mysql  
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
